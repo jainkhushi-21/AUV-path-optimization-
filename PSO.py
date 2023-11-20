@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 class AUVParticle:
     def __init__(self, position):
@@ -14,6 +15,7 @@ def AUV_PSO(PathObjective, Population_size, Dimensions, MaxIterations):
     global_best_position = None
     global_best_fitness = float('inf')
     particles = []
+    convergence_history = []
 
     # Population Initialization
     for _ in range(Population_size):
@@ -37,6 +39,8 @@ def AUV_PSO(PathObjective, Population_size, Dimensions, MaxIterations):
     social_coefficient = 1.2
 
     for itr in range(MaxIterations):
+        convergence_history.append(global_best_fitness)
+
         for particle in particles:
             r1 = random.random()
             r2 = random.random()
@@ -62,18 +66,21 @@ def AUV_PSO(PathObjective, Population_size, Dimensions, MaxIterations):
                 global_best_fitness = fitness
                 global_best_position = particle.position
 
+    # Plot Convergence Graph
+    plt.plot(convergence_history)
+    plt.xlabel("Iteration")
+    plt.ylabel("Best Fitness")
+    plt.title("Convergence Graph")
+    plt.show()
+
     return global_best_position, global_best_fitness
 
 # Define PathObjective functions
 def DistanceToTarget(x):
-    # Replace with your AUV path objective function
-    # Example: Euclidean distance to a target point
     target_point = np.array([1.0, 1.0])
     return np.sqrt(np.sum((x - target_point)**2))
 
 def MaximumDepth(x):
-    # Replace with your AUV path objective function
-    # Example: Maximum depth reached in the path
     return np.max(x)
 
 AUV_Objectives = {'DistanceToTarget': DistanceToTarget, 'MaximumDepth': MaximumDepth}
